@@ -129,3 +129,31 @@ fn can_store(numbers: Vec<u64>) {
     test_store::<Rc<u64>>(numbers.iter().copied().map(Rc::new).collect());
     test_store::<Arc<u64>>(numbers.iter().copied().map(Arc::new).collect());
 }
+
+fn test_methods<T: Pointer + Clone + Eq + std::fmt::Debug>(value: T) {
+    // get value and a clone
+    let mut pointer = PointerIdentity::new(value.clone());
+
+    // tests deref + deref mut
+    assert_eq!(&*pointer, &value);
+    *pointer = value.clone();
+
+    assert_eq!(pointer.inner(), &value);
+    assert_eq!(pointer.into_inner(), value);
+}
+
+#[test]
+fn can_compare_methods() {
+    // smart pointers
+    test_methods(Rc::new(0u64));
+    test_methods(Arc::new(0u64));
+    test_methods(Box::new(0u64));
+
+    // arrays
+    test_methods(&[] as &[()]);
+    test_methods(&[] as &[(); 0]);
+
+    // other
+    #[cfg(feature = "bytes")]
+    test_methods(bytes::Bytes::from(vec![0]));
+}
