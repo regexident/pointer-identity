@@ -2,9 +2,7 @@ mod builtin;
 #[cfg(feature = "bytes")]
 mod bytes;
 
-// TODO: impl for anything that has a as_ptr()?
-
-/// Type that stores it's value in an allocation and can retrieve a pointer to the value.
+/// Type that stores its value in an allocation and can retrieve a pointer to the value.
 pub trait Pointer {
     type Target;
 
