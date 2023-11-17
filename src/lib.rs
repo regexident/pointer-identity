@@ -11,11 +11,7 @@
 //! In some cases, it is good enough to check the identity of the pointer rather than that of the
 //! value.
 
-mod pointer;
 mod identity;
+mod pointer;
 
-pub use crate::{
-    pointer::Pointer,
-    identity::PointerIdentity,
-};
-
+pub use crate::{identity::PointerIdentity, pointer::Pointer};

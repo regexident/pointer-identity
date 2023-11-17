@@ -1,9 +1,9 @@
+use crate::Pointer;
 use std::{
-    ops::{Deref, DerefMut},
     cmp::Ordering,
     hash::{Hash, Hasher},
+    ops::{Deref, DerefMut},
 };
-use crate::Pointer;
 
 #[derive(Debug, Clone, Copy)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]

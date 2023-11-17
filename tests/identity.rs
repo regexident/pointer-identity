@@ -1,13 +1,13 @@
 use pointer_identity::{Pointer, PointerIdentity};
-use test_strategy::*;
 use std::{
+    cmp::Ordering,
+    collections::{hash_map::DefaultHasher, BTreeSet, HashSet},
+    hash::{Hash, Hasher},
+    path::PathBuf,
     rc::Rc,
     sync::Arc,
-    path::PathBuf,
-    cmp::Ordering,
-    collections::hash_map::DefaultHasher,
-    hash::{Hash, Hasher},
 };
+use test_strategy::*;
 
 #[derive(Arbitrary, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone)]
 pub struct Struct {
@@ -109,4 +109,23 @@ fn can_compare_different(left: u64, right: u64) {
     // arrays
     test_different::<&[u64]>(&[left], &[right]);
     test_different::<&[u64; 1]>(&[left], &[right]);
+}
+
+fn test_store<T: Pointer + Clone>(values: Vec<T>) {
+    let mut hash_set = HashSet::new();
+    let mut btree_set = BTreeSet::new();
+
+    for value in values.iter() {
+        hash_set.insert(PointerIdentity::new(value.clone()));
+        btree_set.insert(PointerIdentity::new(value.clone()));
+    }
+
+    assert_eq!(hash_set.len(), values.len());
+    assert_eq!(btree_set.len(), values.len());
+}
+
+#[proptest]
+fn can_store(numbers: Vec<u64>) {
+    test_store::<Rc<u64>>(numbers.iter().copied().map(Rc::new).collect());
+    test_store::<Arc<u64>>(numbers.iter().copied().map(Arc::new).collect());
 }

@@ -1,8 +1,5 @@
 use super::Pointer;
-use std::{
-    sync::Arc,
-    rc::Rc,
-};
+use std::{rc::Rc, sync::Arc};
 
 impl<T> Pointer for Arc<T> {
     type Target = T;
