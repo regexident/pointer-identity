@@ -1,7 +1,7 @@
 use super::Pointer;
 use std::{rc::Rc, sync::Arc};
 
-impl<T> Pointer for Arc<T> {
+impl<T: ?Sized> Pointer for Arc<T> {
     type Target = T;
 
     fn get(&self) -> *const Self::Target {
@@ -9,7 +9,7 @@ impl<T> Pointer for Arc<T> {
     }
 }
 
-impl<T> Pointer for Rc<T> {
+impl<T: ?Sized> Pointer for Rc<T> {
     type Target = T;
 
     fn get(&self) -> *const Self::Target {
@@ -17,7 +17,7 @@ impl<T> Pointer for Rc<T> {
     }
 }
 
-impl<T> Pointer for Box<T> {
+impl<T: ?Sized> Pointer for Box<T> {
     type Target = T;
 
     fn get(&self) -> *const Self::Target {

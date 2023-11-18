@@ -157,3 +157,10 @@ fn can_compare_methods() {
     #[cfg(feature = "bytes")]
     test_methods(bytes::Bytes::from(vec![0]));
 }
+
+#[test]
+fn can_use_unsized_targets() {
+    let data = vec![0, 1, 2];
+    let data: Rc<[u8]> = data.into();
+    let _pointer = PointerIdentity::new(data);
+}

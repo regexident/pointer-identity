@@ -4,7 +4,7 @@ mod bytes;
 
 /// Type that stores its value in an allocation and can retrieve a pointer to the value.
 pub trait Pointer {
-    type Target;
+    type Target: ?Sized;
 
     /// Get a read-only pointer to the value.
     fn get(&self) -> *const Self::Target;
