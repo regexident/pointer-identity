@@ -1,10 +1,25 @@
 # Pointer Identity
 
+This crate gives you a wrapper type that you can use to change how your values are compared
+and hashed.
+
+## Identity
+
 Rust has some traits that operate on values:
 
 - `Ord` and `PartialOrd` check the ordering of values,
 - `Eq` and `PartialEq` check equality of values,
 - `Hash` computes a hash sum of values.
+
+These work on the *values* of the data. For example, two strings `"Hello"` and `"Hello"` will
+compute as being identical, even if they exist in different places in memory:
+
+```rust
+let left = String::from("Hello");
+let right = String::from("Hello");
+assert_eq!(left, right);
+```
+
 
 When using smart pointers such as `Arc`, `Rc` and `Box` in
 Rust, these will forward the implementation to the underlying types. Generally speaking, this

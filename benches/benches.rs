@@ -8,21 +8,24 @@ use std::{
 };
 
 fn criterion_benchmark(c: &mut Criterion) {
-    let key_length = 10;
+    // how many times to read every key
     let read_multiplier = 10;
+    // how many keys there are
+    let data_size = 10000;
+
+    let mut rng = thread_rng();
 
     let mut group = c.benchmark_group("BTreeMap");
-    let mut rng = thread_rng();
-    for i in [10000usize].into_iter() {
+    for key_length in [10, 100, 1000].into_iter() {
         let mut keys: Vec<Vec<u8>> = vec![];
-        for _ in 0..i {
+        for _ in 0..data_size {
             let mut key = vec![0; key_length];
             rng.fill(&mut key[0..key_length]);
             keys.push(key);
         }
 
         let mut lookup = vec![];
-        for _ in 0..(read_multiplier * i) {
+        for _ in 1..(read_multiplier * keys.len()) {
             lookup.push(rng.gen_range(0..keys.len()));
         }
 
@@ -31,7 +34,7 @@ fn criterion_benchmark(c: &mut Criterion) {
             let lookup: Vec<_> = lookup.iter().map(|i| keys[*i].clone()).collect();
             let map: BTreeMap<Rc<[u8]>, usize> =
                 keys.into_iter().enumerate().map(|(x, i)| (i, x)).collect();
-            group.bench_with_input(BenchmarkId::new("Rc<[u8]>", i), &i, |b, i| {
+            group.bench_function(BenchmarkId::new("Rc<[u8]>", key_length), |b| {
                 b.iter(|| {
                     for value in lookup.iter() {
                         black_box(map.get(value).unwrap());
@@ -48,17 +51,13 @@ fn criterion_benchmark(c: &mut Criterion) {
             let lookup: Vec<_> = lookup.iter().map(|i| keys[*i].clone()).collect();
             let map: BTreeMap<_, usize> =
                 keys.into_iter().enumerate().map(|(x, i)| (i, x)).collect();
-            group.bench_with_input(
-                BenchmarkId::new("PointerIdentity<Rc<[u8]>>", i),
-                &i,
-                |b, i| {
-                    b.iter(|| {
-                        for value in lookup.iter() {
-                            black_box(map.get(value).unwrap());
-                        }
-                    })
-                },
-            );
+            group.bench_function(BenchmarkId::new("PointerIdentity<Rc<[u8]>>", key_length), |b| {
+                b.iter(|| {
+                    for value in lookup.iter() {
+                        black_box(map.get(value).unwrap());
+                    }
+                })
+            });
         }
 
         {
@@ -69,33 +68,28 @@ fn criterion_benchmark(c: &mut Criterion) {
             let lookup: Vec<_> = lookup.iter().map(|i| keys[*i].clone()).collect();
             let map: BTreeMap<_, usize> =
                 keys.into_iter().enumerate().map(|(x, i)| (i, x)).collect();
-            group.bench_with_input(
-                BenchmarkId::new("PointerIdentity<Arc<[u8]>>", i),
-                &i,
-                |b, i| {
-                    b.iter(|| {
-                        for value in lookup.iter() {
-                            black_box(map.get(value).unwrap());
-                        }
-                    })
-                },
-            );
+            group.bench_function(BenchmarkId::new("PointerIdentity<Arc<[u8]>>", key_length), |b| {
+                b.iter(|| {
+                    for value in lookup.iter() {
+                        black_box(map.get(value).unwrap());
+                    }
+                })
+            });
         }
     }
     group.finish();
 
     let mut group = c.benchmark_group("HashMap");
-    let mut rng = thread_rng();
-    for i in [10000usize].into_iter() {
+    for key_length in [10, 100, 1000].into_iter() {
         let mut keys: Vec<Vec<u8>> = vec![];
-        for _ in 0..i {
+        for _ in 0..data_size {
             let mut key = vec![0; key_length];
             rng.fill(&mut key[0..key_length]);
             keys.push(key);
         }
 
         let mut lookup = vec![];
-        for _ in 0..(read_multiplier * i) {
+        for _ in 0..(read_multiplier * keys.len()) {
             lookup.push(rng.gen_range(0..keys.len()));
         }
 
@@ -104,7 +98,7 @@ fn criterion_benchmark(c: &mut Criterion) {
             let lookup: Vec<_> = lookup.iter().map(|i| keys[*i].clone()).collect();
             let map: HashMap<Rc<[u8]>, usize> =
                 keys.into_iter().enumerate().map(|(x, i)| (i, x)).collect();
-            group.bench_with_input(BenchmarkId::new("Rc<[u8]>", i), &i, |b, i| {
+            group.bench_function(BenchmarkId::new("Rc<[u8]>", key_length), |b| {
                 b.iter(|| {
                     for value in lookup.iter() {
                         black_box(map.get(value).unwrap());
@@ -121,17 +115,13 @@ fn criterion_benchmark(c: &mut Criterion) {
             let lookup: Vec<_> = lookup.iter().map(|i| keys[*i].clone()).collect();
             let map: HashMap<_, usize> =
                 keys.into_iter().enumerate().map(|(x, i)| (i, x)).collect();
-            group.bench_with_input(
-                BenchmarkId::new("PointerIdentity<Rc<[u8]>>", i),
-                &i,
-                |b, i| {
-                    b.iter(|| {
-                        for value in lookup.iter() {
-                            black_box(map.get(value).unwrap());
-                        }
-                    })
-                },
-            );
+            group.bench_function(BenchmarkId::new("PointerIdentity<Rc<[u8]>>", key_length), |b| {
+                b.iter(|| {
+                    for value in lookup.iter() {
+                        black_box(map.get(value).unwrap());
+                    }
+                })
+            });
         }
 
         {
@@ -142,17 +132,13 @@ fn criterion_benchmark(c: &mut Criterion) {
             let lookup: Vec<_> = lookup.iter().map(|i| keys[*i].clone()).collect();
             let map: HashMap<_, usize> =
                 keys.into_iter().enumerate().map(|(x, i)| (i, x)).collect();
-            group.bench_with_input(
-                BenchmarkId::new("PointerIdentity<Arc<[u8]>>", i),
-                &i,
-                |b, i| {
-                    b.iter(|| {
-                        for value in lookup.iter() {
-                            black_box(map.get(value).unwrap());
-                        }
-                    })
-                },
-            );
+            group.bench_function(BenchmarkId::new("PointerIdentity<Arc<[u8]>>", key_length), |b| {
+                b.iter(|| {
+                    for value in lookup.iter() {
+                        black_box(map.get(value).unwrap());
+                    }
+                })
+            });
         }
     }
     group.finish();
