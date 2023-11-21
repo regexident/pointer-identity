@@ -10,7 +10,7 @@ use std::{
 ///
 /// This wrapper is transparent thanks to implementing both [`Deref`] and [`DerefMut`], so you can
 /// use an instance of this just like you would use an instance of the type you are wrapping.
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, Default)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct PointerIdentity<P: Pointer>(pub P);
 
