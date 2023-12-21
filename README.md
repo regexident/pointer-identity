@@ -33,6 +33,10 @@ This crate lets you achieve that by offering a wrapper type, `PointerIdentity`, 
 use to wrap any value which implements `Pointer` to get it to use the pointer address as
 identity for comparisons and hashing rather than the value of the data it is holding.
 
+## Similar Work
+
+- [mbrubeck/by_address](https://github.com/mbrubeck/by_address/)
+
 ## License
 
 MIT.
