@@ -39,7 +39,7 @@ impl<P: Pointer> From<P> for PointerIdentity<P> {
 
 impl<P: Pointer> PartialEq for PointerIdentity<P> {
     fn eq(&self, other: &Self) -> bool {
-        self.0.get() == other.0.get()
+        std::ptr::addr_eq(self.0.get(), other.0.get())
     }
 }
 
@@ -47,13 +47,13 @@ impl<P: Pointer> Eq for PointerIdentity<P> {}
 
 impl<P: Pointer> PartialOrd for PointerIdentity<P> {
     fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
-        Some(self.0.get().cmp(&other.0.get()))
+        Some(self.0.get().cast::<()>().cmp(&other.0.get().cast::<()>()))
     }
 }
 
 impl<P: Pointer> Ord for PointerIdentity<P> {
     fn cmp(&self, other: &Self) -> Ordering {
-        self.0.get().cmp(&other.0.get())
+        self.0.get().cast::<()>().cmp(&other.0.get().cast::<()>())
     }
 }
 
