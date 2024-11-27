@@ -1,6 +1,8 @@
 mod builtin;
 #[cfg(feature = "bytes")]
 mod bytes;
+#[cfg(feature = "triomphe")]
+mod triomphe;
 
 /// Type that stores its value in an allocation and can retrieve a pointer to the value.
 pub trait Pointer {

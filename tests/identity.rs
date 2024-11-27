@@ -79,9 +79,13 @@ fn can_compare_cloned_identity() {
     test_cloned_identity(&[] as &[()]);
     test_cloned_identity(&[] as &[(); 0]);
 
-    // other
+    // bytes
     #[cfg(feature = "bytes")]
     test_cloned_identity(bytes::Bytes::from(vec![0]));
+
+    // triomphe
+    #[cfg(feature = "triomphe")]
+    test_cloned_identity(triomphe::Arc::new(()));
 }
 
 fn test_different<T: Pointer>(left: T, right: T) {
@@ -153,9 +157,13 @@ fn can_compare_methods() {
     test_methods(&[] as &[()]);
     test_methods(&[] as &[(); 0]);
 
-    // other
+    // bytes
     #[cfg(feature = "bytes")]
     test_methods(bytes::Bytes::from(vec![0]));
+
+    // triomphe
+    #[cfg(feature = "triomphe")]
+    test_methods(triomphe::Arc::new(0u64));
 }
 
 #[test]
